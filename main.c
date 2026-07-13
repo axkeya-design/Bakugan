@@ -66,7 +66,7 @@ int load_bakugans(const char *filename, Bakugan *bakugans, int bakugan_count)
 
 	if (file == NULL) 
 	{
-		printf("Error: File not found!");
+		printf("Error: File not found!\n");
 		return 0;
 	}
 
@@ -76,17 +76,31 @@ int load_bakugans(const char *filename, Bakugan *bakugans, int bakugan_count)
 	while (fgets(line, sizeof(line), file) != NULL && count < bakugan_count)
 	{
 		char element_str[20];
-		int parsed = sscanf(line, "%[^,],%d,%s", bakugans[count].name, &bakugans[count].base_g_power, element_str);
+		char temp_name[50];
+		int temp_g;
+		
+		int parsed = sscanf(line, "%[^,],%d,%s", temp_name, &temp_g, element_str);
 
 		if (parsed == 3)
 		{
-			bakugans[count].g_power = bakugans[count].base_g_power;
-			bakugans[count].element = string_to_element(element_str);
+			Element checked_element = string_to_element(element_str);
+
+			if (checked_element == UNKNOWN_ELEMENT)
+			{
+				printf("Error: UNKNOWN_ELEMENT %s for bakugan %s!\n", element_str, temp_name);
+				fclose(file);
+				return 0;
+			}
+
+			strcpy(bakugans[count].name, temp_name);
+    		bakugans[count].base_g_power = temp_g;
+			bakugans[count].g_power = temp_g;
+			bakugans[count].element = checked_element;
 			count++;
 		}
 		else 
 		{
-			printf("Error: No correct bakugan paramentrs!")
+			printf("Error: No correct bakugan paramentrs!\n");
 			return 0;
 		}
 	}
