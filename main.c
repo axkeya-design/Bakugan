@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define SHORT_STR_LEN  20
 #define NORMAL_STR_LEN 50
@@ -117,7 +118,39 @@ int load_bakugans(const char *filename, Bakugan *bakugans, int bakugan_count)
 typedef struct {
 	char name[NORMAL_STR_LEN];
 	int element_bonuses[6];
+	bool is_card_open;
+	Bakugan *bakugans_on_card; 
+    int bakugan_count;
 } GateCard;
+
+typedef struct {
+	GateCard *gate_cards;
+	int card_count;
+} Battlefield;
+
+Battlefield init_battlefield() 
+{
+    Battlefield field;
+    field.gate_cards = NULL;
+    field.card_count = 0;
+    return field;
+}
+
+bool add_gate_card(Battlefield *field, GateCard card)
+{
+	int new_count = field->card_count + 1;
+	GateCard *temp = realloc(field->gate_cards, new_count * sizeof(GateCard));
+	if (temp == NULL) return false;
+
+	field->gate_cards = temp;
+
+	card.bakugans_on_card = NULL;
+	card.bakugan_count = 0;
+
+	field->gate_cards[field->card_count] = card;
+    field->card_count = new_count;
+    return true;
+}
 
 int main()
 {
