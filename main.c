@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SHORT_STR_LEN  20
+#define NORMAL_STR_LEN 50
+#define LONG_STR_LEN   100
+
 typedef enum {
     PYRUS,
     AQUOS,
@@ -33,7 +37,7 @@ Element string_to_element(const char *str) {
 }
 
 typedef struct {
-	char name[50];
+	char name[NORMAL_STR_LEN];
 	int base_g_power;
 	int g_power;
 	Element element;
@@ -70,13 +74,13 @@ int load_bakugans(const char *filename, Bakugan *bakugans, int bakugan_count)
 		return 0;
 	}
 
-	char line[100];
+	char line[LONG_STR_LEN];
 	int count = 0;
 
 	while (fgets(line, sizeof(line), file) != NULL && count < bakugan_count)
 	{
-		char element_str[20];
-		char temp_name[50];
+		char element_str[SHORT_STR_LEN];
+		char temp_name[NORMAL_STR_LEN];
 		int temp_g;
 		
 		int parsed = sscanf(line, "%[^,],%d,%s", temp_name, &temp_g, element_str);
@@ -101,6 +105,7 @@ int load_bakugans(const char *filename, Bakugan *bakugans, int bakugan_count)
 		else 
 		{
 			printf("Error: No correct bakugan paramentrs!\n");
+			fclose(file);
 			return 0;
 		}
 	}
@@ -108,6 +113,11 @@ int load_bakugans(const char *filename, Bakugan *bakugans, int bakugan_count)
 	fclose(file);
 	return count;
 }
+
+typedef struct {
+	char name[NORMAL_STR_LEN];
+	int element_bonuses[6];
+} GateCard;
 
 int main()
 {
