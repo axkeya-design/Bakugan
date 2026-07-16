@@ -6,6 +6,8 @@
 #define SHORT_STR_LEN  20
 #define NORMAL_STR_LEN 50
 #define LONG_STR_LEN   100
+#define MAX_GATE_CARDS 12
+#define MAX_BAKUGANS_ON_CARD 4
 
 typedef enum {
     PYRUS,
@@ -119,36 +121,36 @@ typedef struct {
 	char name[NORMAL_STR_LEN];
 	int element_bonuses[6];
 	bool is_card_open;
-	Bakugan *bakugans_on_card; 
+	Bakugan bakugans_on_card[MAX_BAKUGANS_ON_CARD]; 
     int bakugan_count;
 } GateCard;
 
 typedef struct {
-	GateCard *gate_cards;
+	GateCard gate_cards[MAX_GATE_CARDS];
 	int card_count;
 } Battlefield;
 
 Battlefield init_battlefield() 
 {
     Battlefield field;
-    field.gate_cards = NULL;
     field.card_count = 0;
     return field;
 }
 
-bool add_gate_card(Battlefield *field, GateCard card)
+bool add_gate_card(Battlefield *field, GateCard card) 
 {
-	int new_count = field->card_count + 1;
-	GateCard *temp = realloc(field->gate_cards, new_count * sizeof(GateCard));
-	if (temp == NULL) return false;
-
-	field->gate_cards = temp;
-
-	card.bakugans_on_card = NULL;
-	card.bakugan_count = 0;
-
-	field->gate_cards[field->card_count] = card;
-    field->card_count = new_count;
+    if (field->card_count >= MAX_GATE_CARDS) 
+    {
+        printf("Error: Battlefield is full! Cannot add more gate cards.\n");
+        return false;
+    }
+    
+    field->gate_cards[field->card_count] = card;
+    field->gate_cards[field->card_count].is_card_open = false;
+    field->gate_cards[field->card_count].bakugan_count = 0;
+    
+    field->card_count++;
+    
     return true;
 }
 
