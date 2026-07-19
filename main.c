@@ -138,6 +138,22 @@ Battlefield init_battlefield()
     return field;
 }
 
+bool add_gate_card(Battlefield *field, GateCard card) 
+{
+    if (field->card_count >= MAX_GATE_CARDS) 
+    {
+        printf("Error: Battlefield is full!\n");
+        return false;
+    }
+    
+    field->gate_cards[field->card_count] = card;
+    field->gate_cards[field->card_count].is_card_open = false;
+    field->gate_cards[field->card_count].bakugan_count = 0;
+    
+    field->card_count++;
+    return true;
+}
+
 int main()
 {
 	Bakugan collection[10];
@@ -155,11 +171,23 @@ int main()
 
 	Battlefield field = init_battlefield();
 
+	GateCard test_card = {"Volcanic Pit", {100, 40, 30, 20, 50, 60}};
+    add_gate_card(&field, test_card);
+
 	for (int i = 0; i < 4; i++)
 	{
-		for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
 		{
-			printf("[]");
+			int index = i * 3 + j;
+
+			if (index < field.card_count)
+			{
+				printf("[ X ]");
+			}
+			else
+			{
+				printf("[%d]", index + 1);
+			}
 		}
 		printf("\n");
 	}
