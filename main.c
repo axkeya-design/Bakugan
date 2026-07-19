@@ -134,24 +134,8 @@ Battlefield init_battlefield()
 {
     Battlefield field;
     field.card_count = 0;
+	memset(field.gate_cards, 0, sizeof(field.gate_cards));
     return field;
-}
-
-bool add_gate_card(Battlefield *field, GateCard card) 
-{
-    if (field->card_count >= MAX_GATE_CARDS) 
-    {
-        printf("Error: Battlefield is full! Cannot add more gate cards.\n");
-        return false;
-    }
-    
-    field->gate_cards[field->card_count] = card;
-    field->gate_cards[field->card_count].is_card_open = false;
-    field->gate_cards[field->card_count].bakugan_count = 0;
-    
-    field->card_count++;
-    
-    return true;
 }
 
 int main()
@@ -167,6 +151,17 @@ int main()
 	{
 		printf("%d.", i + 1);
 		display_status(collection[i]);
+	}
+
+	Battlefield field = init_battlefield();
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			printf("[]");
+		}
+		printf("\n");
 	}
 
 	return 0;
