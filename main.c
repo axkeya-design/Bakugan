@@ -174,22 +174,37 @@ int main()
 	GateCard test_card = {"Volcanic Pit", {100, 40, 30, 20, 50, 60}};
     add_gate_card(&field, test_card);
 
-	for (int i = 0; i < 4; i++)
+	while (true)
 	{
-		for (int j = 0; j < 3; j++)
+		for (int i = 0; i < 4; i++)
 		{
-			int index = i * 3 + j;
+			for (int j = 0; j < 3; j++)
+			{
+				int index = i * 3 + j;
 
-			if (index < field.card_count)
-			{
-				printf("[ X ]");
+				if (index < field.card_count)
+				{
+					printf("[  X  ]");
+				}
+				else
+				{
+					if ((index + 1) > 9)
+					{
+						printf("[  %d ]", index + 1);
+					}
+					else
+					{
+						printf("[  %d  ]", index + 1);
+					}
+				}
 			}
-			else
-			{
-				printf("[%d]", index + 1);
-			}
+
+			printf("\n");
 		}
-		printf("\n");
+
+		int target;
+		printf("Input Target: ");
+		scanf("%d", &target);
 	}
 
 	return 0;
