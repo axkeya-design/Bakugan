@@ -204,7 +204,10 @@ int main()
 
 		int target;
 		printf("Input Target: ");
-		scanf("%d", &target);
+		if (scanf("%d", &target) != 1) 
+		{
+			while (getchar() != '\n');
+		}
 	}
 
 	return 0;
