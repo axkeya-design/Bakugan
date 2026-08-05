@@ -1,214 +1,102 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
-
-#define SHORT_STR_LEN  20
-#define NORMAL_STR_LEN 50
-#define LONG_STR_LEN   100
-#define MAX_GATE_CARDS 12
-#define MAX_BAKUGANS_ON_CARD 4
-
-typedef enum {
-    PYRUS,
-    AQUOS,
-    SUBTERRA,
-    HAOS,
-    VENTUS,
-    DARKUS,
-	UNKNOWN_ELEMENT
-} Element;
-
-const char *ELEMENT_NAMES[] = {
-    "Pyrus",
-    "Aquos",
-    "Subterra",
-    "Haos",
-    "Ventus",
-    "Darkus",
-	"Unknown"
-};
-
-Element string_to_element(const char *str) {
-    if (strcmp(str, "PYRUS") == 0) return PYRUS;
-    if (strcmp(str, "AQUOS") == 0) return AQUOS;
-    if (strcmp(str, "SUBTERRA") == 0) return SUBTERRA;
-    if (strcmp(str, "HAOS") == 0) return HAOS;
-    if (strcmp(str, "VENTUS") == 0) return VENTUS;
-	if (strcmp(str, "DARKUS") == 0) return DARKUS;
-    return UNKNOWN_ELEMENT;
-}
 
 typedef struct {
-	char name[NORMAL_STR_LEN];
-	int base_g_power;
+	char name[20];
 	int g_power;
-	Element element;
+	int init_g_power;
 } Bakugan;
 
-Bakugan Create_Bakugan(char *name, int base_g_power, Element element) 
+void Select_Bakugan(Bakugan bakugans[])
+{
+	int option;
+
+	printf("[1] (%s, G-Power: %d)\n[2] (%s, G-Power: %d)\n[3] (%s, G-Power: %d)\n", 
+			bakugans[0].name, bakugans[0].g_power,
+			bakugans[1].name, bakugans[0].g_power,
+			bakugans[2].name, bakugans[0].g_power
+	);
+
+	printf("Select: ");
+
+	scanf("%d", &option);
+
+	switch (option)
+	{
+		case 1:
+			break;
+		default:
+			break;
+	}
+}
+
+void showOptions(Bakugan bakugans[])
+{
+	int option;
+
+	printf("[1] Select Bakugan\n");
+
+	printf("Select: ");
+
+	scanf("%d", &option);
+
+	switch (option)
+	{
+		case 1:
+			Select_Bakugan(bakugans);
+			break;
+		default:
+			break;
+	}
+}
+
+void actions(char action, Bakugan bakugans[])
+{
+	switch (action)
+	{
+		case 'w':
+			showOptions(bakugans);
+			break;
+		default:
+			break;
+	}
+}
+
+Bakugan init_bakugan(const char *name, int g_power)
 {
 	Bakugan bakugan;
-    strncpy(bakugan.name, name, sizeof(bakugan.name) - 1); 
-    bakugan.name[sizeof(bakugan.name) - 1] = '\0';
-    bakugan.base_g_power = base_g_power;
-    bakugan.g_power = base_g_power;
-    bakugan.element = element;
-
+	strcpy(bakugan.name, name);
+	bakugan.g_power = g_power;
+	bakugan.init_g_power = g_power;
 	return bakugan;
 }
 
-void display_status(Bakugan bakugan) {
-	printf("Bakugan: %s, Base G-Power: %d, Current G-Power: %d, Element: %s\n", 
-			bakugan.name, 
-			bakugan.base_g_power, 
-			bakugan.g_power,
-			ELEMENT_NAMES[bakugan.element]
-	);
-}
-
-int load_bakugans(const char *filename, Bakugan *bakugans, int bakugan_count)
+int main(void)
 {
-	FILE *file = fopen(filename, "r");
+    char action;
+	Bakugan bakugans[3];
 
-	if (file == NULL) 
+	bakugans[0] = init_bakugan("Dragonoid", 400);
+    bakugans[1] = init_bakugan("Naga", 350);
+    bakugans[2] = init_bakugan("Hydranoid", 450);
+	
+    do 
 	{
-		printf("Error: File not found!\n");
-		return 0;
-	}
+        for (int i = 0; i < 3; i++)
+        {
+            printf("[][][]\n");
+        }
 
-	char line[LONG_STR_LEN];
-	int count = 0;
+        printf("Action: ");
 
-	while (fgets(line, sizeof(line), file) != NULL && count < bakugan_count)
-	{
-		char element_str[SHORT_STR_LEN];
-		char temp_name[NORMAL_STR_LEN];
-		int temp_g;
-		
-		int parsed = sscanf(line, "%[^,],%d,%s", temp_name, &temp_g, element_str);
+        scanf(" %c", &action);
 
-		if (parsed == 3)
-		{
-			Element checked_element = string_to_element(element_str);
+		while (getchar() != '\n');
 
-			if (checked_element == UNKNOWN_ELEMENT)
-			{
-				printf("Error: UNKNOWN_ELEMENT %s for bakugan %s!\n", element_str, temp_name);
-				fclose(file);
-				return 0;
-			}
+		actions(action, bakugans);
+    } 
+	while (action != 'q');
 
-			strcpy(bakugans[count].name, temp_name);
-    		bakugans[count].base_g_power = temp_g;
-			bakugans[count].g_power = temp_g;
-			bakugans[count].element = checked_element;
-			count++;
-		}
-		else 
-		{
-			printf("Error: No correct bakugan paramentrs!\n");
-			fclose(file);
-			return 0;
-		}
-	}
-
-	fclose(file);
-	return count;
-}
-
-typedef struct {
-	char name[NORMAL_STR_LEN];
-	int element_bonuses[6];
-	bool is_card_open;
-	Bakugan bakugans_on_card[MAX_BAKUGANS_ON_CARD]; 
-    int bakugan_count;
-} GateCard;
-
-typedef struct {
-	GateCard gate_cards[MAX_GATE_CARDS];
-	int card_count;
-} Battlefield;
-
-Battlefield init_battlefield() 
-{
-    Battlefield field;
-    field.card_count = 0;
-	memset(field.gate_cards, 0, sizeof(field.gate_cards));
-    return field;
-}
-
-bool add_gate_card(Battlefield *field, GateCard card) 
-{
-    if (field->card_count >= MAX_GATE_CARDS) 
-    {
-        printf("Error: Battlefield is full!\n");
-        return false;
-    }
-    
-    field->gate_cards[field->card_count] = card;
-    field->gate_cards[field->card_count].is_card_open = false;
-    field->gate_cards[field->card_count].bakugan_count = 0;
-    
-    field->card_count++;
-    return true;
-}
-
-int main()
-{
-	Bakugan collection[10];
-	int total = load_bakugans("bakugans.csv", collection, 10);
-
-	if (total == 0) return 1;
-
-	printf("Total bakugans: %d\n", total);
-
-	for (int i = 0; i < total; i++)
-	{
-		printf("%d.", i + 1);
-		display_status(collection[i]);
-	}
-
-	Battlefield field = init_battlefield();
-
-	GateCard test_card = {"Volcanic Pit", {100, 40, 30, 20, 50, 60}};
-    add_gate_card(&field, test_card);
-
-	while (true)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			for (int j = 0; j < 3; j++)
-			{
-				int index = i * 3 + j;
-
-				if (index < field.card_count)
-				{
-					printf("[  X  ]");
-				}
-				else
-				{
-					if ((index + 1) > 9)
-					{
-						printf("[  %d ]", index + 1);
-					}
-					else
-					{
-						printf("[  %d  ]", index + 1);
-					}
-				}
-			}
-
-			printf("\n");
-		}
-
-		int target;
-		printf("Input Target: ");
-		if (scanf("%d", &target) != 1) 
-		{
-			while (getchar() != '\n');
-		}
-	}
-
-	return 0;
+    return 0;
 }
